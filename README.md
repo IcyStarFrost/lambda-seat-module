@@ -1,5 +1,5 @@
 # Lambda Seat Module
-A addon for Lambda Players that allows Lambda Players to sit on the ground, on props, and drive prop_jeep vehicles and simfphys.
+A addon for Lambda Players that allows Lambda Players to sit on the ground, on props, and drive prop_jeep vehicles and simfphys. This module adds a new Universal Action to lambdas and a new Personality to Lambdas, Vehicle Chance
 
 Settings are located in Lambda Server Settings
 
