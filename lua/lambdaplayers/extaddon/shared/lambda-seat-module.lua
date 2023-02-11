@@ -4,6 +4,8 @@ local IsValid = IsValid
 local tracetbl2 = {}
 local tracetable = {} -- Recycled table
 
+local allowsitting = CreateLambdaConvar( "lambdaplayers_seat_allowsitting", 1, true, false, false, "If Lambda players are allowed to sit on the ground and props", 0, 1, { type = "Bool", name = "Allow Sitting", category = "Lambda Server Settings" } )
+
 -- Returns if the simfphys vehicle is open
 local function IsSimfphysOpen( veh )
     if veh:OnFire() then return false end
@@ -520,7 +522,7 @@ hook.Add( "LambdaOnInitialize", "lambdaseatmodule_init", Initialize )
 
 -- Random sitting
 AddUActionToLambdaUA( function( self )
-    if !self:IsSitting() and math.random( 0, 100 ) < 50 then 
+    if allowsitting:GetBool() and !self:IsSitting() and math.random( 0, 100 ) < 50 then 
         local nearent = math.random( 1, 3 ) == 1 and self:GetClosestEntity( nil, 100, function( ent ) return ent:GetClass() == "prop_physics" and self:CanSee( ent ) end ) or nil
         self:Sit( nearent, math.Rand( 5, 60 ) ) 
     end
