@@ -522,7 +522,7 @@ hook.Add( "LambdaOnInitialize", "lambdaseatmodule_init", Initialize )
 
 -- Random sitting
 AddUActionToLambdaUA( function( self )
-    if allowsitting:GetBool() and !self:IsSitting() and math.random( 0, 100 ) < 50 then 
+    if allowsitting:GetBool() and !self:InCombat() and !self:IsSitting() and math.random( 0, 100 ) < 50 then 
         local nearent = math.random( 1, 3 ) == 1 and self:GetClosestEntity( nil, 100, function( ent ) return ent:GetClass() == "prop_physics" and self:CanSee( ent ) end ) or nil
         self:Sit( nearent, math.Rand( 5, 60 ) ) 
     end
