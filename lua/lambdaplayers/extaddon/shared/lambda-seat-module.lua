@@ -4,6 +4,18 @@ local IsValid = IsValid
 local tracetbl2 = {}
 local tracetable = {} -- Recycled table
 
+
+local seatmodels = {
+    [ "models/nova/airboat_seat.mdl" ] = true,
+    [ "models/nova/jeep_seat.mdl" ] = true,
+    [ "models/nova/chair_office01.mdl" ] = true,
+    [ "models/nova/chair_office02.mdl" ] = true,
+    [ "models/nova/chair_plastic01.mdl" ] = true,
+    [ "models/nova/chair_wood01.mdl" ] = true,
+    [ "models/props_phx/carseat2.mdl" ] = true,
+    [ "models/nova/jalopy_seat.mdl" ] = true
+}
+
 local allowsitting = CreateLambdaConvar( "lambdaplayers_seat_allowsitting", 1, true, false, false, "If Lambda players are allowed to sit on the ground and props", 0, 1, { type = "Bool", name = "Allow Sitting", category = "Lambda Server Settings" } )
 
 -- Returns if the simfphys vehicle is open
@@ -46,6 +58,10 @@ local function Initialize( self )
     function self:GetVehicle() -- Returns the vehicle. Basically just whatever self.l_currentseatsit is
         return self.l_currentseatsit
     end
+
+    function self:ExitVehicle() self:ResetSitInfo() end
+
+    function self:EnterVehicle( ent ) self:Sit( ent ) end
 
     function self:ResetSitInfo()
         local newstate = self:GetState() == "SitState" and "Idle" or self:GetState() == "DriveState" and "Idle" or self:GetState()
@@ -131,7 +147,7 @@ local function Initialize( self )
         self.l_isseatsitting = true
         self.l_wasseatsitting = true
 
-        self.l_sitendtime = endtime and CurTime() + endtime
+        self.l_sitendtime = endtime and CurTime() + endtime or nil
 
         -- The arg is a entity
         if isentity( sitarg ) and IsValid( sitarg ) then 
@@ -175,9 +191,10 @@ local function Initialize( self )
             sitarg.l_lambdaseated = self
             if self:IsDrivingSimfphys() then sitarg:GetDriverSeat().l_lambdaseated = self end
 
-            if !self.l_invehicle then
-                tracetbl2.start = sitarg:GetPos() + Vector( 0, 0, ( sitarg:GetModelRadius() / 2 ) + 10 )
-                tracetbl2.endos = sitarg:GetPos()
+            if !self.l_invehicle and !seatmodels[ sitarg:GetModel() ] then
+                tracetbl2.start = sitarg:WorldSpaceCenter() + Vector( 0, 0, ( sitarg:GetModelRadius() / 2 ) + 10 )
+                tracetbl2.endpos = sitarg:GetPos()
+                tracetbl2.filter = self
                 local result = util.TraceLine( tracetbl2 )
                 if result.Entity == sitarg then 
                     self.l_seatnormvector = sitarg:WorldToLocal( result.HitPos )
